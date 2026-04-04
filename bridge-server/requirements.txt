@@ -1,0 +1,9 @@
+websockets
+openai
+faster-whisper
+edge-tts
+opuslib
+numpy<2
+ctranslate2==4.7.1
+nvidia-cublas-cu12
+setuptools==69.5.1
