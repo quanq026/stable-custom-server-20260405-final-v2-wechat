@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass, field
 
 from openai import AsyncOpenAI
@@ -5,11 +6,14 @@ from openai import AsyncOpenAI
 
 @dataclass
 class ConversationState:
+    device_id: str
     system_prompt: str
     summary: str = ""
     tail_messages: list = field(default_factory=list)
     last_user_text: str = ""
     last_assistant_text: str = ""
+    last_activity_at: float = 0.0
+    current_session_id: str = ""
 
 
 class LLMClient:
@@ -19,18 +23,52 @@ class LLMClient:
         self.system_prompt = config.system_prompt
         self.context_tail_messages = config.context_tail_messages
         self.session_summary_max_chars = config.session_summary_max_chars
-        self.sessions = {}
+        self.conversation_idle_timeout_seconds = config.conversation_idle_timeout_seconds
+        self.conversations = {}
+        self.active_sessions = {}
+        self.sessions = self.conversations
 
-    def start_session(self, session_id):
-        state = ConversationState(system_prompt=self.system_prompt)
-        self.sessions[session_id] = state
+    def _conversation_key(self, session_id, device_id=None):
+        return str(device_id or session_id)
+
+    def start_session(self, session_id, device_id=None):
+        conversation_key = self._conversation_key(session_id, device_id)
+        state = self.conversations.get(conversation_key)
+        if state is None:
+            state = ConversationState(device_id=conversation_key, system_prompt=self.system_prompt)
+            self.conversations[conversation_key] = state
+        state.current_session_id = session_id
+        self.active_sessions[session_id] = conversation_key
         return state
 
     def end_session(self, session_id):
-        self.sessions.pop(session_id, None)
+        conversation_key = self.active_sessions.pop(session_id, None)
+        if not conversation_key:
+            return
+        state = self.conversations.get(conversation_key)
+        if state and state.current_session_id == session_id:
+            state.current_session_id = ""
 
     def _get_state(self, session_id):
-        return self.sessions.get(session_id) or self.start_session(session_id)
+        conversation_key = self.active_sessions.get(session_id)
+        if conversation_key:
+            state = self.conversations.get(conversation_key)
+            if state is not None:
+                return state
+            return self.start_session(session_id, device_id=conversation_key)
+        return self.start_session(session_id)
+
+    def cleanup_expired_conversations(self, now=None):
+        current_time = time.monotonic() if now is None else now
+        expired = []
+        for conversation_key, state in self.conversations.items():
+            if state.last_activity_at <= 0:
+                continue
+            if current_time - state.last_activity_at > self.conversation_idle_timeout_seconds:
+                expired.append(conversation_key)
+
+        for conversation_key in expired:
+            self.conversations.pop(conversation_key, None)
 
     def _append_summary(self, state, overflow_messages):
         parts = []
@@ -58,6 +96,7 @@ class LLMClient:
             state.last_user_text = clean_text
         elif role == "assistant":
             state.last_assistant_text = clean_text
+        state.last_activity_at = time.monotonic()
 
         overflow_count = len(state.tail_messages) - self.context_tail_messages
         if overflow_count > 0:
@@ -72,6 +111,7 @@ class LLMClient:
         self._append_message(session_id, "assistant", text)
 
     def build_messages(self, session_id):
+        self.cleanup_expired_conversations()
         state = self._get_state(session_id)
         messages = [{"role": "system", "content": state.system_prompt}]
         if state.summary:
@@ -85,6 +125,7 @@ class LLMClient:
         return messages
 
     async def get_response(self, session_id, user_text):
+        self.cleanup_expired_conversations()
         self.append_user_message(session_id, user_text)
 
         try:

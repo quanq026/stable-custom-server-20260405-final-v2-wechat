@@ -7,7 +7,7 @@ from .env_store import ensure_server_id, load_env, save_env
 from .firmware import FirmwareManager
 from .lmstudio import LMStudioClient
 from .models import CommandResult, FlashPlan, RuntimeStatus
-from .runtime import detect_serial_ports, get_bridge_processes, get_discovery_processes
+from .runtime import detect_lan_ip_candidates, detect_serial_ports, get_bridge_processes, get_discovery_processes
 
 
 class ControlController:
@@ -53,33 +53,27 @@ class ControlController:
     def refresh_status(self) -> RuntimeStatus:
         env = self.managed_env()
         bridge_processes = get_bridge_processes()
-        discovery_enabled = env.get(
-            "XIAOZHI_BRIDGE_DISCOVERY_ENABLE",
-            DEFAULT_MANAGED_ENV["XIAOZHI_BRIDGE_DISCOVERY_ENABLE"],
-        ).strip().lower() not in {"0", "false", "no", "off"}
-        discovery_port = int(
-            env.get(
-                "XIAOZHI_BRIDGE_DISCOVERY_PORT",
-                DEFAULT_MANAGED_ENV["XIAOZHI_BRIDGE_DISCOVERY_PORT"],
-            )
-        )
-        discovery_processes = get_discovery_processes(discovery_port) if discovery_enabled else []
+        lan_ip_candidates = detect_lan_ip_candidates()
         firmware_artifacts_ready = all(
             (self.firmware_artifacts_root / name).exists() for name in REQUIRED_FIRMWARE_ARTIFACTS
         )
+        try:
+            bridge_python_path = str(self.bridge_manager.resolved_python())
+        except FileNotFoundError:
+            bridge_python_path = "MISSING"
 
         status = RuntimeStatus(
             bridge_up=bool(bridge_processes),
             bridge_processes=bridge_processes,
-            discovery_up=bool(discovery_processes),
-            discovery_enabled=discovery_enabled,
-            discovery_processes=discovery_processes,
-            discovery_host=env.get(
-                "XIAOZHI_BRIDGE_DISCOVERY_HOST",
-                DEFAULT_MANAGED_ENV["XIAOZHI_BRIDGE_DISCOVERY_HOST"],
-            ),
-            discovery_port=discovery_port,
-            server_id=env.get("XIAOZHI_BRIDGE_SERVER_ID", ""),
+            connection_mode="Manual IP (v1)",
+            preferred_laptop_ip=lan_ip_candidates[0] if lan_ip_candidates else "",
+            laptop_ipv4_candidates=lan_ip_candidates,
+            discovery_up=False,
+            discovery_enabled=False,
+            discovery_processes=[],
+            discovery_host="",
+            discovery_port=0,
+            server_id="",
             lm_studio_reachable=self.lmstudio_client.is_reachable(),
             configured_model=env.get("XIAOZHI_BRIDGE_MODEL_NAME", DEFAULT_MANAGED_ENV["XIAOZHI_BRIDGE_MODEL_NAME"]),
             asr_mode=(
@@ -92,7 +86,7 @@ class ControlController:
             serial_ports=detect_serial_ports(),
             bridge_log_exists=self.bridge_log_path.exists(),
             firmware_artifacts_ready=firmware_artifacts_ready,
-            bridge_python_path=str(self.bridge_manager.resolved_python()),
+            bridge_python_path=bridge_python_path,
         )
         self.last_status = status
         return status
@@ -140,14 +134,17 @@ class ControlController:
             raise ValueError("Flash requires explicit COM-port confirmation")
         return self.execute_action("Flash Firmware", self.firmware_manager.flash, port, on_line)
 
+    def fresh_flash_firmware(self, port: str, on_line=None):
+        if not port:
+            raise ValueError("Fresh Flash requires explicit COM-port confirmation")
+        return self.execute_action("Fresh Flash", self.firmware_manager.fresh_flash, port, on_line)
+
     def status_lines(self) -> list[str]:
         status = self.last_status or self.refresh_status()
         lines = [
             f"Bridge: {'UP' if status.bridge_up else 'DOWN'}",
-            f"Discovery: {'UP' if status.discovery_up else 'DOWN'}",
-            f"Discovery host: {status.discovery_host}.local",
-            f"Discovery port: {status.discovery_port}",
-            f"Server ID: {status.server_id}",
+            f"Connection mode: {status.connection_mode}",
+            f"Laptop IP: {status.preferred_laptop_ip or 'not found'}",
             f"LM Studio: {'UP' if status.lm_studio_reachable else 'DOWN'}",
             f"Model: {status.configured_model}",
             f"ASR: {status.asr_mode}",
@@ -158,30 +155,42 @@ class ControlController:
             f"Bridge Python: {status.bridge_python_path}",
             "Serial ports:",
         ]
+        if status.bridge_python_path == "MISSING":
+            lines.append("  - create bridge-server\\.venv before starting bridge")
         if status.serial_ports:
             lines.extend([f"  - {port.device}: {port.description}" for port in status.serial_ports])
         else:
             lines.append("  - none detected")
+        if len(status.laptop_ipv4_candidates) > 1:
+            lines.append("Other LAN IPs:")
+            lines.extend([f"  - {item}" for item in status.laptop_ipv4_candidates[1:]])
         if status.bridge_processes:
             lines.extend([f"PID {proc.pid} on {proc.port}" for proc in status.bridge_processes])
-        if status.discovery_processes:
-            lines.extend([f"Discovery PID {proc.pid} on UDP {proc.port}" for proc in status.discovery_processes])
         return lines
 
     def _start_stack(self, on_line=None) -> CommandResult:
         bridge_result = self.bridge_manager.start(on_line=on_line)
-        discovery_result = self.discovery_manager.start(on_line=on_line)
+        if bridge_result.exit_code != 0:
+            return bridge_result
+        guidance = ["Discovery disabled in v1 mode"]
+        if self.last_status is None:
+            self.refresh_status()
+        if self.last_status and self.last_status.preferred_laptop_ip:
+            guidance.append(f"Use laptop IP on device portal: {self.last_status.preferred_laptop_ip}")
+            if on_line:
+                on_line(guidance[-1])
+        if on_line:
+            on_line(guidance[0])
         return CommandResult(
-            exit_code=discovery_result.exit_code,
-            output=bridge_result.output + discovery_result.output,
+            exit_code=bridge_result.exit_code,
+            output=bridge_result.output + guidance,
         )
 
     def _stop_stack(self, on_line=None) -> CommandResult:
-        discovery_result = self.discovery_manager.stop(on_line=on_line)
         bridge_result = self.bridge_manager.stop(on_line=on_line)
         return CommandResult(
             exit_code=bridge_result.exit_code,
-            output=discovery_result.output + bridge_result.output,
+            output=bridge_result.output,
         )
 
     def _restart_stack(self, on_line=None) -> CommandResult:

@@ -1,0 +1,476 @@
+2026-04-05 03:11:25,999 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 03:11:26,481 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 03:11:29,138 INFO websockets.server server listening on 0.0.0.0:8000
+2026-04-05 03:11:29,139 INFO xiaozhi_bridge Xiaozhi Bridge Server running on ws://0.0.0.0:8000
+2026-04-05 07:53:07,571 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 07:53:08,006 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 07:53:10,726 INFO websockets.server server listening on 0.0.0.0:8000
+2026-04-05 07:53:10,727 INFO xiaozhi_bridge Xiaozhi Bridge Server running on ws://0.0.0.0:8000
+2026-04-05 08:34:43,808 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 08:34:44,818 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 08:35:34,956 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 08:35:35,712 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 08:35:45,673 INFO websockets.server server listening on 0.0.0.0:8000
+2026-04-05 08:35:45,675 INFO xiaozhi_bridge Xiaozhi Bridge Server running on ws://0.0.0.0:8000
+2026-04-05 08:35:46,688 INFO websockets.server connection open
+2026-04-05 08:35:46,710 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 51334)
+2026-04-05 08:35:46,725 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}}
+2026-04-05 08:35:46,726 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 08:35:46,782 INFO xiaozhi_bridge.server Received JSON: {'session_id': '6c647d89-fc30-4739-a29b-e312a53f897a', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 08:35:49,978 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 08:36:42,494 INFO websockets.server connection open
+2026-04-05 08:36:42,513 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 54491)
+2026-04-05 08:36:42,542 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}}
+2026-04-05 08:36:42,544 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 08:36:42,622 INFO xiaozhi_bridge.server Received JSON: {'session_id': '523c917f-b42a-4b7b-9536-81241e00dd4f', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 08:36:44,531 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 08:36:44,553 INFO faster_whisper Processing audio with duration 00:01.140
+2026-04-05 08:36:59,770 INFO xiaozhi_bridge.server ASR recognized: Xin chào!
+2026-04-05 08:36:59,771 INFO xiaozhi_bridge.server Sent JSON event: stt text len=9
+2026-04-05 08:36:59,771 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 08:37:00,923 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-04-05 08:37:00,926 INFO xiaozhi_bridge.server LLM response: Xin loi, toi dang gap truc trac khi tra loi.
+2026-04-05 08:37:00,927 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 08:37:00,927 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=44
+2026-04-05 08:37:02,748 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 08:37:02,748 ERROR xiaozhi_bridge.server Error streaming TTS: no close frame received or sent
+Traceback (most recent call last):
+  File "C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\xiaozhi_bridge\server.py", line 327, in process_speech
+    await self._stream_tts_packet_stream(websocket, opus_packet_stream, state)
+  File "C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\xiaozhi_bridge\server.py", line 188, in _stream_tts_packet_stream
+    await websocket.send(Protocol.wrap_audio_payload(packet, self.protocol_version))
+  File "C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\.venv\lib\site-packages\websockets\asyncio\connection.py", line 485, in send
+    async with self.send_context():
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python310\lib\contextlib.py", line 199, in __aenter__
+    return await anext(self.gen)
+  File "C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\.venv\lib\site-packages\websockets\asyncio\connection.py", line 965, in send_context
+    raise self.protocol.close_exc from original_exc
+websockets.exceptions.ConnectionClosedError: no close frame received or sent
+2026-04-05 08:37:02,759 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 08:41:34,405 INFO websockets.server connection open
+2026-04-05 08:41:34,427 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 62485)
+2026-04-05 08:41:34,517 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}}
+2026-04-05 08:41:34,519 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 08:41:34,574 INFO xiaozhi_bridge.server Received JSON: {'session_id': '7a8301ad-f81b-4d84-bfbb-9e08bc72158f', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 08:41:36,864 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 08:41:36,878 INFO faster_whisper Processing audio with duration 00:01.260
+2026-04-05 08:41:50,772 INFO xiaozhi_bridge.server ASR recognized: Xin chào!
+2026-04-05 08:41:50,791 INFO xiaozhi_bridge.server Sent JSON event: stt text len=9
+2026-04-05 08:41:50,791 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 08:42:02,638 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 08:42:02,654 INFO xiaozhi_bridge.server LLM response: Chào bạn! Chào mừng bạn đến với Monozukuri Club – nơi tập trung vào việc tạo ra những sản phẩm thực tế.
+2026-04-05 08:42:02,654 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 08:42:02,655 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=103
+2026-04-05 08:42:05,808 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 08:42:13,177 INFO xiaozhi_bridge.server Streaming 119 opus packets back to device
+2026-04-05 08:42:13,197 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 09:22:55,634 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 09:22:56,460 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 09:24:00,047 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 09:24:00,666 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 09:24:07,160 INFO websockets.server server listening on 0.0.0.0:8000
+2026-04-05 09:24:07,162 INFO xiaozhi_bridge Xiaozhi Bridge Server running on ws://0.0.0.0:8000
+2026-04-05 11:37:05,280 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 11:37:06,101 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 11:37:13,551 INFO websockets.server server listening on 0.0.0.0:8000
+2026-04-05 11:37:13,552 INFO xiaozhi_bridge Xiaozhi Bridge Server running on ws://0.0.0.0:8000
+2026-04-05 11:37:20,207 INFO websockets.server connection open
+2026-04-05 11:37:20,209 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 54746)
+2026-04-05 11:37:20,239 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}}
+2026-04-05 11:37:20,240 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 11:37:20,294 INFO xiaozhi_bridge.server Received JSON: {'session_id': '69c86dd3-1f01-485f-8500-1fa61d779d44', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 11:37:22,922 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 11:37:22,925 INFO faster_whisper Processing audio with duration 00:01.080
+2026-04-05 11:37:23,938 INFO xiaozhi_bridge.server ASR recognized: Xin chào!
+2026-04-05 11:37:23,938 INFO xiaozhi_bridge.server Sent JSON event: stt text len=9
+2026-04-05 11:37:23,938 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 11:37:25,625 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 11:37:25,632 INFO xiaozhi_bridge.server LLM response: Có thể giúp tôi với gì hôm nay?
+2026-04-05 11:37:25,633 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 11:37:25,633 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=31
+2026-04-05 11:37:28,280 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 11:37:31,175 INFO xiaozhi_bridge.server Streaming 47 opus packets back to device
+2026-04-05 11:37:31,177 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 11:37:39,549 INFO xiaozhi_bridge.server Received JSON: {'session_id': '69c86dd3-1f01-485f-8500-1fa61d779d44', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 11:37:41,610 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 11:37:44,211 INFO websockets.server connection open
+2026-04-05 11:37:44,230 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 54747)
+2026-04-05 11:37:44,238 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}}
+2026-04-05 11:37:44,239 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 11:37:44,294 INFO xiaozhi_bridge.server Received JSON: {'session_id': '9ed4227c-2693-4700-9b34-a456c8bf98f4', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 11:37:46,321 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 11:37:46,323 INFO faster_whisper Processing audio with duration 00:01.680
+2026-04-05 11:37:46,707 INFO xiaozhi_bridge.server ASR recognized: Bạn là ai?
+2026-04-05 11:37:46,709 INFO xiaozhi_bridge.server Sent JSON event: stt text len=10
+2026-04-05 11:37:46,709 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 11:37:48,575 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 11:37:48,577 INFO xiaozhi_bridge.server LLM response: Mono là kỹ sư công nghệ tại CLB Monozukuri VJU, hỗ trợ các thành viên trong việc thực hiện dự án và học hỏi kỹ năng thiế
+2026-04-05 11:37:48,578 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 11:37:48,578 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=120
+2026-04-05 11:37:50,641 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 11:37:59,202 INFO xiaozhi_bridge.server Streaming 140 opus packets back to device
+2026-04-05 11:37:59,204 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 13:04:22,536 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 13:04:23,295 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 13:04:31,006 INFO websockets.server server listening on 0.0.0.0:8000
+2026-04-05 13:04:31,008 INFO xiaozhi_bridge Xiaozhi Bridge Server running on ws://0.0.0.0:8000
+2026-04-05 13:05:39,199 INFO websockets.server connection open
+2026-04-05 13:05:39,200 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 55073)
+2026-04-05 13:05:39,210 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}}
+2026-04-05 13:05:39,210 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 13:05:39,257 INFO xiaozhi_bridge.server Received JSON: {'session_id': 'a0a30f6d-5b8e-4340-b325-cab1b0bdeb56', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 13:05:44,377 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 13:05:44,381 INFO faster_whisper Processing audio with duration 00:00.720
+2026-04-05 13:05:45,607 INFO xiaozhi_bridge.server ASR recognized: Hẹn gặp lại các bạn trong những video tiếp theo.
+2026-04-05 13:05:45,608 INFO xiaozhi_bridge.server Sent JSON event: stt text len=48
+2026-04-05 13:05:45,608 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 13:05:48,103 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 13:05:48,110 INFO xiaozhi_bridge.server LLM response: Chào mừng bạn đến với video tiếp theo! Chúng ta sẽ cùng khám phá những nội dung mới trong video này.
+2026-04-05 13:05:48,110 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 13:05:48,111 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=100
+2026-04-05 13:05:59,658 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 13:06:07,247 INFO xiaozhi_bridge.server Streaming 123 opus packets back to device
+2026-04-05 13:06:07,249 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 13:06:07,250 INFO xiaozhi_bridge.server Received JSON: {'session_id': 'a0a30f6d-5b8e-4340-b325-cab1b0bdeb56', 'type': 'abort'}
+2026-04-05 13:06:07,250 INFO xiaozhi_bridge.server Received JSON: {'session_id': 'a0a30f6d-5b8e-4340-b325-cab1b0bdeb56', 'type': 'abort'}
+2026-04-05 13:06:07,251 INFO xiaozhi_bridge.server Received JSON: {'session_id': 'a0a30f6d-5b8e-4340-b325-cab1b0bdeb56', 'type': 'abort'}
+2026-04-05 13:06:09,863 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 13:06:15,063 INFO websockets.server connection open
+2026-04-05 13:06:15,065 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 60800)
+2026-04-05 13:06:15,080 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}}
+2026-04-05 13:06:15,081 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 13:06:15,126 INFO xiaozhi_bridge.server Received JSON: {'session_id': '829a19fe-eb47-4776-8e21-b9a76bfe8961', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 13:06:16,877 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 13:06:16,879 INFO faster_whisper Processing audio with duration 00:01.020
+2026-04-05 13:06:17,238 INFO xiaozhi_bridge.server ASR recognized: Chào
+2026-04-05 13:06:17,238 INFO xiaozhi_bridge.server Sent JSON event: stt text len=4
+2026-04-05 13:06:17,238 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 13:06:19,080 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 13:06:19,082 INFO xiaozhi_bridge.server LLM response: Hãy cho tôi biết nếu bạn cần hỗ trợ kỹ thuật nào.
+2026-04-05 13:06:19,083 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 13:06:19,083 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=49
+2026-04-05 13:06:20,466 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 13:06:24,212 INFO xiaozhi_bridge.server Streaming 61 opus packets back to device
+2026-04-05 13:06:24,213 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 13:06:24,986 INFO xiaozhi_bridge.server Received JSON: {'session_id': '829a19fe-eb47-4776-8e21-b9a76bfe8961', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 13:06:27,109 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 13:06:27,111 INFO faster_whisper Processing audio with duration 00:01.080
+2026-04-05 13:06:27,491 INFO xiaozhi_bridge.server ASR recognized: Bạn là ai?
+2026-04-05 13:06:27,492 INFO xiaozhi_bridge.server Sent JSON event: stt text len=10
+2026-04-05 13:06:27,492 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 13:06:29,000 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 13:06:29,002 INFO xiaozhi_bridge.server LLM response: Tôi là Mono, kỹ thuật viên chính thức của Monozukuri Club tại VJU. Hãy cho tôi biết nếu bạn cần hỗ trợ kỹ thuật nào!
+2026-04-05 13:06:29,002 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 13:06:29,002 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=116
+2026-04-05 13:06:31,552 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 13:06:40,612 INFO xiaozhi_bridge.server Streaming 148 opus packets back to device
+2026-04-05 13:06:40,613 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 13:07:35,199 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 13:08:58,679 INFO websockets.server connection open
+2026-04-05 13:08:58,680 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 50075)
+2026-04-05 13:08:58,692 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}}
+2026-04-05 13:08:58,692 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 13:08:58,768 INFO xiaozhi_bridge.server Received JSON: {'session_id': 'd1ac7fa5-1586-4499-836e-cc1d68477d8f', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 13:09:13,185 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 13:09:14,153 INFO websockets.server connection open
+2026-04-05 13:09:14,156 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 50076)
+2026-04-05 13:09:14,163 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}}
+2026-04-05 13:09:14,164 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 13:09:14,211 INFO xiaozhi_bridge.server Received JSON: {'session_id': '20454ea8-452c-43e6-be20-d2203ab3e876', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 13:09:15,811 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 13:09:15,813 INFO faster_whisper Processing audio with duration 00:01.080
+2026-04-05 13:09:16,413 INFO xiaozhi_bridge.server ASR recognized: Hãy đăng ký kênh để ủng hộ kênh của mình nhé.
+2026-04-05 13:09:16,414 INFO xiaozhi_bridge.server Sent JSON event: stt text len=45
+2026-04-05 13:09:16,414 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 13:09:19,697 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 13:09:19,698 INFO xiaozhi_bridge.server LLM response: Xin vui lòng đăng ký kênh trên nền tảng mà bạn muốn (ví dụ: YouTube, Twitch, Instagram...).
+2026-04-05 13:09:19,699 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 13:09:19,699 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=91
+2026-04-05 13:09:22,745 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 13:09:22,795 ERROR xiaozhi_bridge.server Error streaming TTS: no close frame received or sent
+Traceback (most recent call last):
+  File "C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\xiaozhi_bridge\server.py", line 327, in process_speech
+    await self._stream_tts_packet_stream(websocket, opus_packet_stream, state)
+  File "C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\xiaozhi_bridge\server.py", line 188, in _stream_tts_packet_stream
+    await websocket.send(Protocol.wrap_audio_payload(packet, self.protocol_version))
+  File "C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\.venv\lib\site-packages\websockets\asyncio\connection.py", line 485, in send
+    async with self.send_context():
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python310\lib\contextlib.py", line 199, in __aenter__
+    return await anext(self.gen)
+  File "C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\.venv\lib\site-packages\websockets\asyncio\connection.py", line 965, in send_context
+    raise self.protocol.close_exc from original_exc
+websockets.exceptions.ConnectionClosedError: no close frame received or sent
+2026-04-05 13:09:22,804 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 13:09:37,612 INFO websockets.server connection open
+2026-04-05 13:09:37,614 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 61543)
+2026-04-05 13:09:37,624 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}}
+2026-04-05 13:09:37,624 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 13:09:37,668 INFO xiaozhi_bridge.server Received JSON: {'session_id': 'efa91681-3c6d-49b9-97a0-03bc71d1e197', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 13:09:39,778 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 13:09:39,781 INFO faster_whisper Processing audio with duration 00:01.140
+2026-04-05 13:09:40,189 INFO xiaozhi_bridge.server ASR recognized: Mày là ai?
+2026-04-05 13:09:40,190 INFO xiaozhi_bridge.server Sent JSON event: stt text len=10
+2026-04-05 13:09:40,191 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 13:09:42,367 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 13:09:42,370 INFO xiaozhi_bridge.server LLM response: Tôi là Mono, kỹ thuật viên hỗ trợ Monozukuri Club tại VJU.
+2026-04-05 13:09:42,370 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 13:09:42,370 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=58
+2026-04-05 13:09:44,210 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 13:09:49,549 INFO xiaozhi_bridge.server Streaming 86 opus packets back to device
+2026-04-05 13:09:49,551 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 13:16:11,598 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 13:16:11,612 INFO websockets.server connection open
+2026-04-05 13:16:11,613 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 61544)
+2026-04-05 13:16:11,618 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}}
+2026-04-05 13:16:11,619 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 13:16:11,665 INFO xiaozhi_bridge.server Received JSON: {'session_id': '8ac7ded9-20c0-4248-935b-5632a9bbb525', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 13:16:13,607 INFO xiaozhi_bridge.server Received JSON: {'session_id': '8ac7ded9-20c0-4248-935b-5632a9bbb525', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 13:16:15,450 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 13:16:15,453 INFO faster_whisper Processing audio with duration 00:01.440
+2026-04-05 13:16:15,931 INFO xiaozhi_bridge.server ASR recognized: Kể cho tôi một câu chuyện cười.
+2026-04-05 13:16:15,932 INFO xiaozhi_bridge.server Sent JSON event: stt text len=31
+2026-04-05 13:16:15,933 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 13:16:17,648 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 13:16:17,651 INFO xiaozhi_bridge.server LLM response: Làm gì khi robot của bạn không uống cà phê đúng vị? Vì nó đã có quá nhiều lý thuyết!
+2026-04-05 13:16:17,651 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 13:16:17,651 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=84
+2026-04-05 13:16:19,578 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 13:16:26,451 INFO xiaozhi_bridge.server Streaming 112 opus packets back to device
+2026-04-05 13:16:26,453 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 13:19:41,619 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 13:27:38,263 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 13:27:38,775 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 13:27:46,939 INFO websockets.server server listening on 0.0.0.0:8000
+2026-04-05 13:27:46,941 INFO xiaozhi_bridge Xiaozhi Bridge Server running on ws://0.0.0.0:8000
+2026-04-05 13:28:28,302 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 13:28:29,062 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 13:28:36,548 INFO websockets.server server listening on 0.0.0.0:8000
+2026-04-05 13:28:36,549 INFO xiaozhi_bridge Xiaozhi Bridge Server running on ws://0.0.0.0:8000
+2026-04-05 13:28:52,959 INFO websockets.server connection open
+2026-04-05 13:28:52,961 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 51657)
+2026-04-05 13:28:52,972 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}}
+2026-04-05 13:28:52,973 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 13:28:53,020 INFO xiaozhi_bridge.server Received JSON: {'session_id': '95ec6d0f-0022-4d20-966d-7d4a223e8212', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 13:28:55,841 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 13:28:55,843 INFO faster_whisper Processing audio with duration 00:00.900
+2026-04-05 13:28:57,076 INFO xiaozhi_bridge.server ASR recognized: Xin chào.
+2026-04-05 13:28:57,076 INFO xiaozhi_bridge.server Sent JSON event: stt text len=9
+2026-04-05 13:28:57,076 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 13:29:00,727 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 13:29:00,737 INFO xiaozhi_bridge.server LLM response: Chào bạn! Bạn cần hỗ trợ gì về Monozukuri Club hoặc công việc kỹ thuật?
+2026-04-05 13:29:00,738 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 13:29:00,738 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=71
+2026-04-05 13:29:03,272 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 13:29:09,028 INFO xiaozhi_bridge.server Streaming 95 opus packets back to device
+2026-04-05 13:29:09,030 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 13:36:51,186 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 13:36:51,839 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 13:36:59,410 INFO websockets.server server listening on 0.0.0.0:8000
+2026-04-05 13:36:59,411 INFO xiaozhi_bridge Xiaozhi Bridge Server running on ws://0.0.0.0:8000
+2026-04-05 13:37:29,709 INFO websockets.server connection open
+2026-04-05 13:37:29,712 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 51658)
+2026-04-05 13:37:29,721 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}}
+2026-04-05 13:37:29,721 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 13:37:29,769 INFO xiaozhi_bridge.server Received JSON: {'session_id': '16dcd776-e490-43b9-9ca5-c63fcfc43ff8', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 13:37:45,210 INFO websockets.server connection open
+2026-04-05 13:37:45,212 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 50295)
+2026-04-05 13:37:45,224 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}}
+2026-04-05 13:37:45,225 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 13:37:45,270 INFO xiaozhi_bridge.server Received JSON: {'session_id': '607138f6-9799-4133-9cd6-ac106c274da4', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 13:37:47,193 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 13:37:47,197 INFO faster_whisper Processing audio with duration 00:01.380
+2026-04-05 13:37:48,485 INFO xiaozhi_bridge.server ASR recognized: Hãy kể cho tôi một câu chuyện vừa.
+2026-04-05 13:37:48,485 INFO xiaozhi_bridge.server Sent JSON event: stt text len=34
+2026-04-05 13:37:48,485 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 13:37:49,715 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 13:37:53,325 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 13:37:53,334 INFO xiaozhi_bridge.server LLM response: Một học sinh trong câu chuyện đã gặp khó khăn khi thiết kế bộ điều khiển cho robot.
+2026-04-05 13:37:53,335 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 13:37:53,335 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=83
+2026-04-05 13:37:56,579 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 13:38:01,549 INFO xiaozhi_bridge.server Streaming 81 opus packets back to device
+2026-04-05 13:38:01,552 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 13:38:02,522 INFO xiaozhi_bridge.server Received JSON: {'session_id': '607138f6-9799-4133-9cd6-ac106c274da4', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 13:38:04,091 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 13:38:04,094 INFO faster_whisper Processing audio with duration 00:00.900
+2026-04-05 13:38:04,706 INFO xiaozhi_bridge.server Ignoring likely hallucinated ASR transcript: Hẹn gặp lại các bạn trong những video tiếp theo.
+2026-04-05 13:38:08,558 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 13:38:09,430 INFO websockets.server connection open
+2026-04-05 13:38:09,432 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 50296)
+2026-04-05 13:38:09,441 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}}
+2026-04-05 13:38:09,442 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 13:38:09,494 INFO xiaozhi_bridge.server Received JSON: {'session_id': 'c45f4c11-4ccf-450e-8033-37596ee56d65', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 13:38:11,419 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 13:38:11,421 INFO faster_whisper Processing audio with duration 00:01.140
+2026-04-05 13:38:11,790 INFO xiaozhi_bridge.server ASR recognized: Tại sao?
+2026-04-05 13:38:11,792 INFO xiaozhi_bridge.server Sent JSON event: stt text len=8
+2026-04-05 13:38:11,792 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 13:38:14,964 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 13:38:14,967 INFO xiaozhi_bridge.server LLM response: Bạn có thể giải thích rõ hơn về câu hỏi của mình không?
+2026-04-05 13:38:14,967 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 13:38:14,967 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=55
+2026-04-05 13:38:16,587 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 13:38:20,497 INFO xiaozhi_bridge.server Streaming 64 opus packets back to device
+2026-04-05 13:38:20,499 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 13:50:08,584 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 14:29:24,839 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 14:29:26,133 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 14:30:06,553 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 14:30:07,358 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 14:30:15,186 INFO websockets.server server listening on 0.0.0.0:8000
+2026-04-05 14:30:15,188 INFO xiaozhi_bridge Xiaozhi Bridge Server running on ws://0.0.0.0:8000
+2026-04-05 14:32:26,105 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 14:32:27,044 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 14:32:31,967 INFO websockets.server server listening on 0.0.0.0:8000
+2026-04-05 14:32:31,986 INFO xiaozhi_bridge Xiaozhi Bridge Server running on ws://0.0.0.0:8000
+2026-04-05 14:33:03,716 INFO websockets.server connection open
+2026-04-05 14:33:03,717 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 52147)
+2026-04-05 14:33:03,738 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}, 'device_id': '3c:0f:02:de:d6:a4'}
+2026-04-05 14:33:03,739 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 14:33:03,799 INFO xiaozhi_bridge.server Received JSON: {'session_id': '8ad654bc-3d3b-47dd-a0de-5db8aeeaf19e', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 14:33:06,196 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 14:33:06,216 INFO faster_whisper Processing audio with duration 00:01.920
+2026-04-05 14:33:13,110 INFO xiaozhi_bridge.server ASR recognized: 1 x 2 bằng bao nhiêu?
+2026-04-05 14:33:13,111 INFO xiaozhi_bridge.server Sent JSON event: stt text len=21
+2026-04-05 14:33:13,111 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 14:33:35,713 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 14:33:35,725 INFO xiaozhi_bridge.server LLM response: 2.
+2026-04-05 14:33:35,726 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 14:33:35,726 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=2
+2026-04-05 14:33:38,121 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 14:33:39,490 INFO xiaozhi_bridge.server Streaming 22 opus packets back to device
+2026-04-05 14:33:39,510 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 14:33:39,950 INFO xiaozhi_bridge.server Received JSON: {'session_id': '8ad654bc-3d3b-47dd-a0de-5db8aeeaf19e', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 14:33:43,247 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 14:33:43,267 INFO faster_whisper Processing audio with duration 00:02.580
+2026-04-05 14:33:50,509 INFO xiaozhi_bridge.server ASR recognized: Đấy số đấy nhân tiếp với 3 thì bằng bao nhiêu?
+2026-04-05 14:33:50,528 INFO xiaozhi_bridge.server Sent JSON event: stt text len=46
+2026-04-05 14:33:50,529 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 14:34:04,376 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 14:34:04,396 INFO xiaozhi_bridge.server LLM response: 6.
+2026-04-05 14:34:04,397 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 14:34:04,397 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=2
+2026-04-05 14:34:05,910 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 14:34:07,277 INFO xiaozhi_bridge.server Streaming 22 opus packets back to device
+2026-04-05 14:34:07,295 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 14:34:12,513 INFO xiaozhi_bridge.server Received JSON: {'session_id': '8ad654bc-3d3b-47dd-a0de-5db8aeeaf19e', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 14:34:15,232 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 14:34:15,252 INFO faster_whisper Processing audio with duration 00:01.560
+2026-04-05 14:34:22,149 INFO xiaozhi_bridge.server ASR recognized: Chia cho 3 bằng bao nhiêu?
+2026-04-05 14:34:22,151 INFO xiaozhi_bridge.server Sent JSON event: stt text len=26
+2026-04-05 14:34:22,151 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 14:34:38,111 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 14:34:38,131 INFO xiaozhi_bridge.server LLM response: 4.
+2026-04-05 14:34:38,132 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 14:34:38,132 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=2
+2026-04-05 14:34:39,410 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 14:34:40,783 INFO xiaozhi_bridge.server Streaming 22 opus packets back to device
+2026-04-05 14:34:40,802 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 14:34:52,240 INFO xiaozhi_bridge.server Received JSON: {'session_id': '8ad654bc-3d3b-47dd-a0de-5db8aeeaf19e', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 14:34:53,480 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 14:34:53,499 INFO faster_whisper Processing audio with duration 00:01.080
+2026-04-05 14:35:00,185 INFO xiaozhi_bridge.server ASR recognized: Nhân với năm.
+2026-04-05 14:35:00,203 INFO xiaozhi_bridge.server Sent JSON event: stt text len=13
+2026-04-05 14:35:00,204 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 14:35:17,035 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 14:35:17,055 INFO xiaozhi_bridge.server LLM response: 20.
+2026-04-05 14:35:17,056 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 14:35:17,056 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=3
+2026-04-05 14:35:17,867 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 14:35:19,481 INFO xiaozhi_bridge.server Streaming 26 opus packets back to device
+2026-04-05 14:35:19,500 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 15:54:42,094 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 15:56:15,159 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 15:56:15,885 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 15:56:19,797 INFO websockets.server server listening on 0.0.0.0:8000
+2026-04-05 15:56:19,798 INFO xiaozhi_bridge Xiaozhi Bridge Server running on ws://0.0.0.0:8000
+2026-04-05 15:56:45,073 INFO websockets.server connection open
+2026-04-05 15:56:45,075 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 58254)
+2026-04-05 15:56:45,096 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}, 'device_id': '3c:0f:02:de:d6:a4'}
+2026-04-05 15:56:45,098 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 15:56:45,142 INFO xiaozhi_bridge.server Received JSON: {'session_id': '1faaebef-3911-4185-ba3a-73d05322842d', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 15:56:46,954 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 15:56:46,956 INFO faster_whisper Processing audio with duration 00:01.620
+2026-04-05 15:56:52,583 INFO xiaozhi_bridge.server ASR recognized: Xin chào
+2026-04-05 15:56:52,585 INFO xiaozhi_bridge.server Sent JSON event: stt text len=8
+2026-04-05 15:56:52,585 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 15:57:07,021 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 15:57:07,033 INFO xiaozhi_bridge.server LLM response: Chào bạn! Bạn cần hỗ trợ gì về Monozukuri Club hoặc công việc kỹ thuật?
+2026-04-05 15:57:07,033 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 15:57:07,033 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=71
+2026-04-05 15:57:07,848 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 15:57:13,736 INFO xiaozhi_bridge.server Streaming 95 opus packets back to device
+2026-04-05 15:57:13,739 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 15:59:57,657 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 15:59:58,479 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 16:00:05,928 INFO websockets.server server listening on 0.0.0.0:8000
+2026-04-05 16:00:05,929 INFO xiaozhi_bridge Xiaozhi Bridge Server running on ws://0.0.0.0:8000
+2026-04-05 16:00:38,539 INFO websockets.server connection open
+2026-04-05 16:00:38,559 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 58317)
+2026-04-05 16:00:38,570 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}, 'device_id': '3c:0f:02:de:d6:a4'}
+2026-04-05 16:00:38,571 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 16:00:38,622 INFO xiaozhi_bridge.server Received JSON: {'session_id': 'e9c09433-4c61-4308-bdcb-13aea1c3e702', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 16:00:40,966 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 16:00:40,972 INFO faster_whisper Processing audio with duration 00:01.740
+2026-04-05 16:00:42,004 INFO xiaozhi_bridge.server ASR recognized: Xin chào
+2026-04-05 16:00:42,004 INFO xiaozhi_bridge.server Sent JSON event: stt text len=8
+2026-04-05 16:00:42,004 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 16:00:45,586 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 16:00:45,593 INFO xiaozhi_bridge.server LLM response: Chào bạn! Bạn cần hỗ trợ gì về Monozukuri Club hoặc các dự án kỹ thuật?
+2026-04-05 16:00:45,593 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 16:00:45,594 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=71
+2026-04-05 16:00:48,132 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 16:00:54,334 INFO xiaozhi_bridge.server Streaming 100 opus packets back to device
+2026-04-05 16:00:54,336 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 16:00:54,338 INFO xiaozhi_bridge.server Received JSON: {'session_id': 'e9c09433-4c61-4308-bdcb-13aea1c3e702', 'type': 'abort'}
+2026-04-05 16:00:55,489 INFO xiaozhi_bridge.server Received JSON: {'session_id': 'e9c09433-4c61-4308-bdcb-13aea1c3e702', 'type': 'abort'}
+2026-04-05 16:02:08,573 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 16:04:51,783 INFO websockets.server connection open
+2026-04-05 16:04:51,788 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 53795)
+2026-04-05 16:04:51,797 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}, 'device_id': '3c:0f:02:de:d6:a4'}
+2026-04-05 16:04:51,798 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 16:04:51,854 INFO xiaozhi_bridge.server Received JSON: {'session_id': '230f4505-1745-4e0a-b293-ba8fee296da5', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 16:04:53,100 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 16:04:53,103 INFO faster_whisper Processing audio with duration 00:01.140
+2026-04-05 16:04:53,716 INFO xiaozhi_bridge.server ASR recognized: Cảm ơn các bạn đã theo dõi và hẹn gặp lại.
+2026-04-05 16:04:53,717 INFO xiaozhi_bridge.server Sent JSON event: stt text len=42
+2026-04-05 16:04:53,717 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 16:04:56,920 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 16:04:56,923 INFO xiaozhi_bridge.server LLM response: Chào bạn! Rất vui được hỗ trợ.
+2026-04-05 16:04:56,924 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 16:04:56,924 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=30
+2026-04-05 16:04:59,550 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 16:05:03,297 INFO xiaozhi_bridge.server Streaming 61 opus packets back to device
+2026-04-05 16:05:03,300 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 16:05:28,421 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 16:05:35,823 INFO websockets.server connection open
+2026-04-05 16:05:35,825 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 61150)
+2026-04-05 16:05:35,834 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}, 'device_id': '3c:0f:02:de:d6:a4'}
+2026-04-05 16:05:35,835 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 16:05:35,886 INFO xiaozhi_bridge.server Received JSON: {'session_id': '34716fad-5fa5-4ac7-a10e-1d7c127cb495', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 16:05:38,651 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 16:05:38,654 INFO faster_whisper Processing audio with duration 00:02.640
+2026-04-05 16:05:39,030 INFO xiaozhi_bridge.server ASR recognized: Xin chào
+2026-04-05 16:05:39,031 INFO xiaozhi_bridge.server Sent JSON event: stt text len=8
+2026-04-05 16:05:39,032 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 16:05:40,803 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 16:05:40,806 INFO xiaozhi_bridge.server LLM response: Chào bạn! Rất vui được hỗ trợ.
+2026-04-05 16:05:40,806 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 16:05:40,807 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=30
+2026-04-05 16:05:42,835 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 16:05:46,542 INFO xiaozhi_bridge.server Streaming 61 opus packets back to device
+2026-04-05 16:05:46,544 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 16:05:48,481 INFO xiaozhi_bridge.server Received JSON: {'session_id': '34716fad-5fa5-4ac7-a10e-1d7c127cb495', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 16:05:53,113 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 16:05:53,119 INFO faster_whisper Processing audio with duration 00:01.260
+2026-04-05 16:05:53,545 INFO xiaozhi_bridge.server ASR recognized: Bạn tên là gì?
+2026-04-05 16:05:53,547 INFO xiaozhi_bridge.server Sent JSON event: stt text len=14
+2026-04-05 16:05:53,548 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 16:05:56,620 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 16:05:56,622 INFO xiaozhi_bridge.server LLM response: Tôi là Mono. Bạn cần hỗ trợ gì về Monozukuri Club hoặc kỹ thuật?
+2026-04-05 16:05:56,622 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 16:05:56,623 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=64
+2026-04-05 16:05:57,761 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 16:06:03,874 INFO xiaozhi_bridge.server Streaming 99 opus packets back to device
+2026-04-05 16:06:03,876 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 16:07:05,829 INFO xiaozhi_bridge.server Connection closed

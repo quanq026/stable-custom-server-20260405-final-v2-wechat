@@ -1,0 +1,78 @@
+2026-04-05 15:59:57,657 INFO xiaozhi_bridge Bridge logging initialized at C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\bridge-server\tmp\bridge-server.log
+2026-04-05 15:59:58,479 INFO httpx HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-large-v3/revision/main "HTTP/1.1 200 OK"
+2026-04-05 16:00:05,928 INFO websockets.server server listening on 0.0.0.0:8000
+2026-04-05 16:00:05,929 INFO xiaozhi_bridge Xiaozhi Bridge Server running on ws://0.0.0.0:8000
+2026-04-05 16:00:38,539 INFO websockets.server connection open
+2026-04-05 16:00:38,559 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 58317)
+2026-04-05 16:00:38,570 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}, 'device_id': '3c:0f:02:de:d6:a4'}
+2026-04-05 16:00:38,571 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 16:00:38,622 INFO xiaozhi_bridge.server Received JSON: {'session_id': 'e9c09433-4c61-4308-bdcb-13aea1c3e702', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 16:00:40,966 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 16:00:40,972 INFO faster_whisper Processing audio with duration 00:01.740
+2026-04-05 16:00:42,004 INFO xiaozhi_bridge.server ASR recognized: Xin chào
+2026-04-05 16:00:42,004 INFO xiaozhi_bridge.server Sent JSON event: stt text len=8
+2026-04-05 16:00:42,004 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 16:00:45,586 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 16:00:45,593 INFO xiaozhi_bridge.server LLM response: Chào b\u1ea1n! B\u1ea1n c\u1ea7n h\u1ed7 tr\u1ee3 gì v\u1ec1 Monozukuri Club ho\u1eb7c các d\u1ef1 án k\u1ef9 thu\u1eadt?
+2026-04-05 16:00:45,593 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 16:00:45,594 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=71
+2026-04-05 16:00:48,132 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 16:00:54,334 INFO xiaozhi_bridge.server Streaming 100 opus packets back to device
+2026-04-05 16:00:54,336 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 16:00:54,338 INFO xiaozhi_bridge.server Received JSON: {'session_id': 'e9c09433-4c61-4308-bdcb-13aea1c3e702', 'type': 'abort'}
+2026-04-05 16:00:55,489 INFO xiaozhi_bridge.server Received JSON: {'session_id': 'e9c09433-4c61-4308-bdcb-13aea1c3e702', 'type': 'abort'}
+2026-04-05 16:02:08,573 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 16:04:51,783 INFO websockets.server connection open
+2026-04-05 16:04:51,788 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 53795)
+2026-04-05 16:04:51,797 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}, 'device_id': '3c:0f:02:de:d6:a4'}
+2026-04-05 16:04:51,798 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 16:04:51,854 INFO xiaozhi_bridge.server Received JSON: {'session_id': '230f4505-1745-4e0a-b293-ba8fee296da5', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 16:04:53,100 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 16:04:53,103 INFO faster_whisper Processing audio with duration 00:01.140
+2026-04-05 16:04:53,716 INFO xiaozhi_bridge.server ASR recognized: C\u1ea3m \u01a1n các b\u1ea1n \u0111ã theo dõi và h\u1eb9n g\u1eb7p l\u1ea1i.
+2026-04-05 16:04:53,717 INFO xiaozhi_bridge.server Sent JSON event: stt text len=42
+2026-04-05 16:04:53,717 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 16:04:56,920 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 16:04:56,923 INFO xiaozhi_bridge.server LLM response: Chào b\u1ea1n! R\u1ea5t vui \u0111\u01b0\u1ee3c h\u1ed7 tr\u1ee3.
+2026-04-05 16:04:56,924 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 16:04:56,924 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=30
+2026-04-05 16:04:59,550 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 16:05:03,297 INFO xiaozhi_bridge.server Streaming 61 opus packets back to device
+2026-04-05 16:05:03,300 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 16:05:28,421 INFO xiaozhi_bridge.server Connection closed
+2026-04-05 16:05:35,823 INFO websockets.server connection open
+2026-04-05 16:05:35,825 INFO xiaozhi_bridge.server New connection from ('10.79.56.165', 61150)
+2026-04-05 16:05:35,834 INFO xiaozhi_bridge.server Received JSON: {'type': 'hello', 'version': 1, 'features': {'mcp': True}, 'transport': 'websocket', 'audio_params': {'format': 'opus', 'sample_rate': 16000, 'channels': 1, 'frame_duration': 60}, 'device_id': '3c:0f:02:de:d6:a4'}
+2026-04-05 16:05:35,835 INFO xiaozhi_bridge.server Sent hello response with protocol version 1
+2026-04-05 16:05:35,886 INFO xiaozhi_bridge.server Received JSON: {'session_id': '34716fad-5fa5-4ac7-a10e-1d7c127cb495', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 16:05:38,651 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 16:05:38,654 INFO faster_whisper Processing audio with duration 00:02.640
+2026-04-05 16:05:39,030 INFO xiaozhi_bridge.server ASR recognized: Xin chào
+2026-04-05 16:05:39,031 INFO xiaozhi_bridge.server Sent JSON event: stt text len=8
+2026-04-05 16:05:39,032 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 16:05:40,803 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 16:05:40,806 INFO xiaozhi_bridge.server LLM response: Chào b\u1ea1n! R\u1ea5t vui \u0111\u01b0\u1ee3c h\u1ed7 tr\u1ee3.
+2026-04-05 16:05:40,806 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 16:05:40,807 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=30
+2026-04-05 16:05:42,835 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 16:05:46,542 INFO xiaozhi_bridge.server Streaming 61 opus packets back to device
+2026-04-05 16:05:46,544 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 16:05:48,481 INFO xiaozhi_bridge.server Received JSON: {'session_id': '34716fad-5fa5-4ac7-a10e-1d7c127cb495', 'type': 'listen', 'state': 'start', 'mode': 'auto'}
+2026-04-05 16:05:53,113 INFO xiaozhi_bridge.server Silence detected, processing speech
+2026-04-05 16:05:53,119 INFO faster_whisper Processing audio with duration 00:01.260
+2026-04-05 16:05:53,545 INFO xiaozhi_bridge.server ASR recognized: B\u1ea1n tên là gì?
+2026-04-05 16:05:53,547 INFO xiaozhi_bridge.server Sent JSON event: stt text len=14
+2026-04-05 16:05:53,548 INFO xiaozhi_bridge.server Asking LLM
+2026-04-05 16:05:56,620 INFO httpx HTTP Request: POST http://localhost:1234/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-05 16:05:56,622 INFO xiaozhi_bridge.server LLM response: Tôi là Mono. B\u1ea1n c\u1ea7n h\u1ed7 tr\u1ee3 gì v\u1ec1 Monozukuri Club ho\u1eb7c k\u1ef9 thu\u1eadt?
+2026-04-05 16:05:56,622 INFO xiaozhi_bridge.server Sent JSON event: tts start
+2026-04-05 16:05:56,623 INFO xiaozhi_bridge.server Sent JSON event: tts sentence_start len=64
+2026-04-05 16:05:57,761 INFO xiaozhi_bridge.server Streaming first opus packet back to device
+2026-04-05 16:06:03,874 INFO xiaozhi_bridge.server Streaming 99 opus packets back to device
+2026-04-05 16:06:03,876 INFO xiaozhi_bridge.server Sent JSON event: tts stop
+2026-04-05 16:07:05,829 INFO xiaozhi_bridge.server Connection closed
+forrtl: error (200): program aborting due to window-CLOSE event
+Image              PC                Routine            Line        Source             
+KERNELBASE.dll     00007FFD09E32357  Unknown               Unknown  Unknown
+KERNEL32.DLL       00007FFD0AC2259D  Unknown               Unknown  Unknown
+ntdll.dll          00007FFD0C7AAF78  Unknown               Unknown  Unknown

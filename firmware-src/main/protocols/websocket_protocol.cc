@@ -1,5 +1,8 @@
 #include "websocket_protocol.h"
 #include "bridge_discovery.h"
+#include "device_identity.h"
+#include "discovered_server_cache.h"
+#include "json_frame_utils.h"
 #include "board.h"
 #include "system_info.h"
 #include "application.h"
@@ -82,30 +85,44 @@ void WebsocketProtocol::CloseAudioChannel() {
 
 bool WebsocketProtocol::OpenAudioChannel() {
     Settings settings("websocket", false);
+    pending_discovered_server_cache_.reset();
+    connected_ws_url_.clear();
+    connected_server_id_.clear();
+    connected_server_name_.clear();
+    std::string url = settings.GetString("url");
+    std::string token = settings.GetString("token");
+    version_ = settings.GetInt("version", 1);
+    if (version_ <= 0) {
+        version_ = 1;
+    }
 #if CONFIG_BRIDGE_MODE_ENABLE
-    std::string url;
-    std::string token;
-    version_ = 1;
+#if CONFIG_BRIDGE_DISCOVERY_ENABLE
     BridgeDiscoveryManager discovery_manager;
     BridgeDiscoveryResult discovery_result;
+#endif
+    bool discovery_used = false;
 #if CONFIG_BRIDGE_DISCOVERY_ENABLE
-    if (discovery_manager.Resolve(discovery_result)) {
+    if (url.empty() && discovery_manager.Resolve(discovery_result)) {
+        discovery_used = true;
         url = discovery_result.ws_url;
         connected_server_id_ = discovery_result.server_id;
         connected_server_name_ = discovery_result.server_name;
-    } else {
+    }
+#endif
+    if (url.empty()) {
         url = CONFIG_BRIDGE_WEBSOCKET_URL;
     }
-#else
-    url = CONFIG_BRIDGE_WEBSOCKET_URL;
-#endif
-#else
-    std::string url = settings.GetString("url");
-    std::string token = settings.GetString("token");
-    int version = settings.GetInt("version");
-    if (version != 0) {
-        version_ = version;
+    if (url.empty()) {
+        ESP_LOGE(TAG, "Missing websocket.url in settings and no bridge fallback is configured");
+        SetError(Lang::Strings::SERVER_NOT_CONNECTED);
+        return false;
     }
+    pending_discovered_server_cache_ = PrepareDiscoveredServerCache(
+        discovery_used,
+        url,
+        connected_server_id_,
+        connected_server_name_
+    );
 #endif
 
     error_occurred_ = false;
@@ -123,10 +140,11 @@ bool WebsocketProtocol::OpenAudioChannel() {
         if (token.find(" ") == std::string::npos) {
             token = "Bearer " + token;
         }
-        websocket_->SetHeader("Authorization", token.c_str());
+    websocket_->SetHeader("Authorization", token.c_str());
     }
     websocket_->SetHeader("Protocol-Version", std::to_string(version_).c_str());
-    websocket_->SetHeader("Device-Id", SystemInfo::GetMacAddress().c_str());
+    const std::string device_id = BuildStableDeviceId(SystemInfo::GetMacAddress());
+    websocket_->SetHeader("Device-Id", device_id.c_str());
     websocket_->SetHeader("Client-Id", Board::GetInstance().GetUuid().c_str());
 
     websocket_->OnData([this](const char* data, size_t len, bool binary) {
@@ -167,7 +185,12 @@ bool WebsocketProtocol::OpenAudioChannel() {
             }
         } else {
             // Parse JSON data
-            auto root = cJSON_Parse(data);
+            std::string json_text = CopyJsonFrameText(data, len);
+            auto root = cJSON_Parse(json_text.c_str());
+            if (root == nullptr) {
+                ESP_LOGE(TAG, "Failed to parse websocket JSON payload len=%u", static_cast<unsigned>(len));
+                return;
+            }
             auto type = cJSON_GetObjectItem(root, "type");
             if (cJSON_IsString(type)) {
                 if (strcmp(type->valuestring, "hello") == 0) {
@@ -178,7 +201,7 @@ bool WebsocketProtocol::OpenAudioChannel() {
                     }
                 }
             } else {
-                ESP_LOGE(TAG, "Missing message type, data: %s", data);
+                ESP_LOGE(TAG, "Missing message type, data len=%u", static_cast<unsigned>(len));
             }
             cJSON_Delete(root);
         }
@@ -193,23 +216,21 @@ bool WebsocketProtocol::OpenAudioChannel() {
     });
 
     ESP_LOGI(TAG, "Connecting to websocket server: %s with version: %d", url.c_str(), version_);
-    if (!websocket_->Connect(url.c_str())) {
+    bool connected = websocket_->Connect(url.c_str());
 #if CONFIG_BRIDGE_MODE_ENABLE && CONFIG_BRIDGE_DISCOVERY_ENABLE
-        if (discovery_result.from_mdns && discovery_manager.ResolveUdpFallback(discovery_result)) {
+    if (!connected && discovery_result.from_mdns && discovery_manager.ResolveUdpFallback(discovery_result)) {
             ESP_LOGW(TAG, "mDNS candidate connect failed, retrying with UDP-discovered ws_url=%s", discovery_result.ws_url.c_str());
             connected_ws_url_ = discovery_result.ws_url;
             connected_server_id_ = discovery_result.server_id;
             connected_server_name_ = discovery_result.server_name;
-            if (websocket_->Connect(discovery_result.ws_url.c_str())) {
-                goto websocket_connected;
-            }
+            connected = websocket_->Connect(discovery_result.ws_url.c_str());
         }
 #endif
+    if (!connected) {
         ESP_LOGE(TAG, "Failed to connect to websocket server, code=%d", websocket_->GetLastError());
         SetError(Lang::Strings::SERVER_NOT_CONNECTED);
         return false;
     }
-websocket_connected:
 
     // Send hello message to describe the client
     auto message = GetHelloMessage();
@@ -223,6 +244,14 @@ websocket_connected:
         ESP_LOGE(TAG, "Failed to receive server hello");
         SetError(Lang::Strings::SERVER_TIMEOUT);
         return false;
+    }
+
+    if (pending_discovered_server_cache_.has_value()) {
+        pending_discovered_server_cache_->ws_url = connected_ws_url_;
+        pending_discovered_server_cache_->server_id = connected_server_id_;
+        pending_discovered_server_cache_->server_name = connected_server_name_;
+        CacheDiscoveredServer(*pending_discovered_server_cache_);
+        pending_discovered_server_cache_.reset();
     }
 
     if (on_audio_channel_opened_ != nullptr) {
@@ -250,6 +279,7 @@ std::string WebsocketProtocol::GetHelloMessage() {
     cJSON_AddNumberToObject(audio_params, "channels", 1);
     cJSON_AddNumberToObject(audio_params, "frame_duration", OPUS_FRAME_DURATION_MS);
     cJSON_AddItemToObject(root, "audio_params", audio_params);
+    cJSON_AddStringToObject(root, "device_id", BuildStableDeviceId(SystemInfo::GetMacAddress()).c_str());
     auto json_str = cJSON_PrintUnformatted(root);
     std::string message(json_str);
     cJSON_free(json_str);
@@ -292,23 +322,30 @@ void WebsocketProtocol::ParseServerHello(const cJSON* root) {
         }
     }
 
-#if CONFIG_BRIDGE_MODE_ENABLE && CONFIG_BRIDGE_DISCOVERY_ENABLE
-    CacheDiscoveredServer();
-#endif
+    ESP_LOGI(
+        TAG,
+        "Parsed server hello session_id=%s server_id=%s server_name=%s sample_rate=%d frame_duration=%d",
+        session_id_.c_str(),
+        connected_server_id_.c_str(),
+        connected_server_name_.c_str(),
+        server_sample_rate_,
+        server_frame_duration_
+    );
+
     xEventGroupSetBits(event_group_handle_, WEBSOCKET_PROTOCOL_SERVER_HELLO_EVENT);
 }
 
-void WebsocketProtocol::CacheDiscoveredServer() {
-    if (connected_ws_url_.empty()) {
+void WebsocketProtocol::CacheDiscoveredServer(const DiscoveredServerCacheEntry& entry) {
+    if (entry.ws_url.empty()) {
         return;
     }
 
     Settings settings("bridge_discovery", true);
-    if (!connected_server_id_.empty()) {
-        settings.SetString("server_id", connected_server_id_);
+    if (!entry.server_id.empty()) {
+        settings.SetString("server_id", entry.server_id);
     }
-    if (!connected_server_name_.empty()) {
-        settings.SetString("server_name", connected_server_name_);
+    if (!entry.server_name.empty()) {
+        settings.SetString("server_name", entry.server_name);
     }
-    settings.SetString("ws_url", connected_ws_url_);
+    settings.SetString("ws_url", entry.ws_url);
 }

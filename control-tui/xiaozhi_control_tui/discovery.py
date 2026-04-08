@@ -237,7 +237,7 @@ class DiscoveryManager:
         port = int(load_env(self.env_path).get("XIAOZHI_BRIDGE_DISCOVERY_PORT", "24681"))
         script = """
         Get-CimInstance Win32_Process |
-            Where-Object { $_.CommandLine -like '*xiaozhi_control_tui.discovery*' } |
+            Where-Object { $_.ProcessId -ne $PID -and $_.CommandLine -like '*xiaozhi_control_tui.discovery*' } |
             ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
 
         Get-NetUDPEndpoint -LocalPort __DISCOVERY_PORT__ -ErrorAction SilentlyContinue |
@@ -250,6 +250,7 @@ class DiscoveryManager:
         return powershell_command(script.replace("__DISCOVERY_PORT__", str(port)))
 
     def start(self, on_line=None) -> CommandResult:
+        self.stop(on_line=on_line)
         if on_line:
             on_line("Starting discovery responder...")
 

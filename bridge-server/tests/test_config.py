@@ -20,6 +20,8 @@ class ConfigTests(unittest.TestCase):
             "XIAOZHI_BRIDGE_SYSTEM_PROMPT",
             "XIAOZHI_BRIDGE_CONTEXT_TAIL_MESSAGES",
             "XIAOZHI_BRIDGE_SESSION_SUMMARY_MAX_CHARS",
+            "XIAOZHI_BRIDGE_CONVERSATION_IDLE_TIMEOUT_SECONDS",
+            "XIAOZHI_BRIDGE_CONVERSATION_CLEANUP_INTERVAL_SECONDS",
             "XIAOZHI_BRIDGE_MAX_REPLY_CHARS",
             "XIAOZHI_BRIDGE_MAX_REPLY_SENTENCES",
             "XIAOZHI_BRIDGE_DROP_AUDIO_WHILE_PROCESSING",
@@ -60,6 +62,8 @@ class ConfigTests(unittest.TestCase):
         self.assertTrue(config.server_id)
         self.assertEqual(config.context_tail_messages, 6)
         self.assertEqual(config.session_summary_max_chars, 600)
+        self.assertEqual(config.conversation_idle_timeout_seconds, 3600)
+        self.assertEqual(config.conversation_cleanup_interval_seconds, 300)
         self.assertEqual(config.max_reply_chars, 120)
         self.assertEqual(config.max_reply_sentences, 2)
         self.assertTrue(config.drop_audio_while_processing)
@@ -76,6 +80,8 @@ class ConfigTests(unittest.TestCase):
         os.environ["XIAOZHI_BRIDGE_SYSTEM_PROMPT"] = "custom prompt"
         os.environ["XIAOZHI_BRIDGE_CONTEXT_TAIL_MESSAGES"] = "4"
         os.environ["XIAOZHI_BRIDGE_SESSION_SUMMARY_MAX_CHARS"] = "320"
+        os.environ["XIAOZHI_BRIDGE_CONVERSATION_IDLE_TIMEOUT_SECONDS"] = "120"
+        os.environ["XIAOZHI_BRIDGE_CONVERSATION_CLEANUP_INTERVAL_SECONDS"] = "30"
         os.environ["XIAOZHI_BRIDGE_MAX_REPLY_CHARS"] = "80"
         os.environ["XIAOZHI_BRIDGE_MAX_REPLY_SENTENCES"] = "1"
         os.environ["XIAOZHI_BRIDGE_DROP_AUDIO_WHILE_PROCESSING"] = "false"
@@ -104,6 +110,8 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(config.system_prompt, "custom prompt")
         self.assertEqual(config.context_tail_messages, 4)
         self.assertEqual(config.session_summary_max_chars, 320)
+        self.assertEqual(config.conversation_idle_timeout_seconds, 120)
+        self.assertEqual(config.conversation_cleanup_interval_seconds, 30)
         self.assertEqual(config.max_reply_chars, 80)
         self.assertEqual(config.max_reply_sentences, 1)
         self.assertFalse(config.drop_audio_while_processing)

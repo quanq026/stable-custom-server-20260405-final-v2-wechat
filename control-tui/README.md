@@ -6,6 +6,7 @@ Terminal UI to manage the current locked Xiaozhi baseline only:
 - LM Studio health and model selection
 - system prompt editing
 - persistent runtime overrides in `.env.local`
+- current laptop LAN IP guidance for the device Wi-Fi portal
 - firmware build
 - firmware flash with explicit COM-port confirmation
 - live bridge log tailing
@@ -20,14 +21,14 @@ Managed baseline:
 From PowerShell:
 
 ```powershell
-cd C:\QuanNewData\xiaozhi\xiaozhi-control-tui
+cd C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\control-tui
 .\run-xiaozhi-control-tui.ps1
 ```
 
 Or from `cmd.exe`:
 
 ```cmd
-cd C:\QuanNewData\xiaozhi\xiaozhi-control-tui
+cd C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\control-tui
 run-xiaozhi-control-tui.cmd
 ```
 
@@ -36,6 +37,8 @@ The launcher creates a local `.venv` for the TUI if needed and installs:
 - `textual`
 - `httpx`
 - `pyserial`
+
+On first `Start Bridge`, the TUI also bootstraps `bridge-server\.venv` automatically if it is missing.
 
 ## Layout
 
@@ -66,19 +69,39 @@ Managed keys in v1:
 
 The TUI does not edit `config.py`.
 
+## Connection mode
+
+This `v1` baseline does not use discovery. The TUI shows:
+
+- `Connection mode: Manual IP (v1)`
+- `Laptop IP: ...`
+
+Use that IP in the device Wi-Fi portal together with the target `SSID` and `password`. The firmware stores:
+
+- `bridge_lan.server_ip`
+- `websocket.url = ws://<server_ip>:8000/xiaozhi/v1/`
+- `websocket.version = 1`
+
+## Before starting a conversation
+
+1. Open `LM Studio`.
+2. Load the configured chat model, usually `qwen3-1.7b`.
+3. Confirm local server is available on `http://localhost:1234`.
+4. In the TUI, press `Start Bridge`.
+
+If the bridge reaches ASR but `LM Studio` has no loaded model, the chat request can fail with `HTTP 400 Bad Request`.
+
 ## System prompt
 
 Use the `System Prompt` action in the TUI to edit the bridge assistant prompt in a dedicated modal editor. The value is saved into `.env.local` and applied after a bridge restart.
 
 ## Bridge runtime note
 
-The final snapshot does not currently ship with its own bridge `.venv`. The TUI resolves bridge Python in this order:
+The final snapshot can bootstrap its own bridge `.venv` on demand. The TUI resolves bridge Python in this order:
 
 1. `XIAOZHI_BRIDGE_PYTHON`
 2. snapshot `.venv\Scripts\python.exe`
-3. the known working bridge runtime from the original bridge worktree
-
-This makes the TUI usable immediately on the current machine without copying the whole bridge virtual environment into the final snapshot.
+3. create snapshot `.venv` automatically on first bridge start
 
 ## Flash behavior
 

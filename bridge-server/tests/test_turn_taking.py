@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 
-REPO_ROOT = Path(r"C:\QuanNewData\xiaozhi\Xiaozhi-ESP32-Bridge-Server\.worktrees\codex\bridge-server-lan")
+REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 

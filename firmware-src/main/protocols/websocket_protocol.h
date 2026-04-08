@@ -3,10 +3,12 @@
 
 
 #include "protocol.h"
+#include "discovered_server_cache.h"
 
 #include <web_socket.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/event_groups.h>
+#include <optional>
 
 #define WEBSOCKET_PROTOCOL_SERVER_HELLO_EVENT (1 << 0)
 
@@ -28,9 +30,10 @@ private:
     std::string connected_ws_url_;
     std::string connected_server_id_;
     std::string connected_server_name_;
+    std::optional<DiscoveredServerCacheEntry> pending_discovered_server_cache_;
 
     void ParseServerHello(const cJSON* root);
-    void CacheDiscoveredServer();
+    void CacheDiscoveredServer(const DiscoveredServerCacheEntry& entry);
     bool SendText(const std::string& text) override;
     std::string GetHelloMessage();
 };

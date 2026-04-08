@@ -39,6 +39,34 @@ $env:PATH = (($toolPaths + @($env:PATH)) -join ";")
 
 Push-Location $projectRoot
 try {
+    $buildDir = Join-Path $projectRoot "build"
+    $normalizedProject = [System.IO.Path]::GetFullPath($projectRoot)
+    if (Test-Path $buildDir) {
+        $cacheFiles = @(
+            Join-Path $buildDir "CMakeCache.txt"
+            Join-Path $buildDir "bootloader\\CMakeCache.txt"
+        )
+
+        foreach ($cmakeCache in $cacheFiles) {
+            if (-not (Test-Path $cmakeCache)) {
+                continue
+            }
+
+            $cacheSourceLine = Select-String -Path $cmakeCache -Pattern '^CMAKE_HOME_DIRECTORY:INTERNAL=' -ErrorAction SilentlyContinue | Select-Object -First 1
+            if (-not $cacheSourceLine) {
+                continue
+            }
+
+            $cachedSource = ($cacheSourceLine.Line -replace '^CMAKE_HOME_DIRECTORY:INTERNAL=', '').Trim()
+            $normalizedCached = [System.IO.Path]::GetFullPath($cachedSource)
+            if (-not [string]::Equals($normalizedCached, $normalizedProject, [System.StringComparison]::OrdinalIgnoreCase)) {
+                Write-Host "Detected stale build cache from another source tree. Removing build directory..." -ForegroundColor Yellow
+                Remove-Item $buildDir -Recurse -Force
+                break
+            }
+        }
+    }
+
     $sdkconfigFile = Join-Path $projectRoot "sdkconfig.bridge.touch"
     if (Test-Path $sdkconfigFile) {
         Remove-Item $sdkconfigFile -Force

@@ -5,7 +5,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
 
-REPO_ROOT = Path(r"C:\QuanNewData\xiaozhi\Xiaozhi-ESP32-Bridge-Server\.worktrees\codex\bridge-server-lan")
+REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
@@ -26,6 +26,8 @@ class LLMClientSessionTests(unittest.IsolatedAsyncioTestCase):
             ),
             context_tail_messages=2,
             session_summary_max_chars=80,
+            conversation_idle_timeout_seconds=3600,
+            conversation_cleanup_interval_seconds=300,
         )
 
     async def test_new_session_does_not_inherit_other_session_history(self):

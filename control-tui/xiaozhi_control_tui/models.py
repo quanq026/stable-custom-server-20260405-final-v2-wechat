@@ -19,6 +19,9 @@ class BridgeProcessInfo:
 class RuntimeStatus:
     bridge_up: bool
     bridge_processes: list[BridgeProcessInfo] = field(default_factory=list)
+    connection_mode: str = "Manual IP (v1)"
+    preferred_laptop_ip: str = ""
+    laptop_ipv4_candidates: list[str] = field(default_factory=list)
     discovery_up: bool = False
     discovery_enabled: bool = True
     discovery_processes: list[BridgeProcessInfo] = field(default_factory=list)

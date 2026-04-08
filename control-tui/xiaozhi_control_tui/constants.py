@@ -55,7 +55,7 @@ DEFAULT_MANAGED_ENV = {
     "XIAOZHI_BRIDGE_ASR_MODEL": "large-v3",
     "XIAOZHI_BRIDGE_ASR_DEVICE": "cuda",
     "XIAOZHI_BRIDGE_ASR_COMPUTE_TYPE": "float16",
-    "XIAOZHI_BRIDGE_DISCOVERY_ENABLE": "true",
+    "XIAOZHI_BRIDGE_DISCOVERY_ENABLE": "false",
     "XIAOZHI_BRIDGE_DISCOVERY_HOST": "xiaozhi-bridge",
     "XIAOZHI_BRIDGE_DISCOVERY_PORT": "24681",
     "XIAOZHI_BRIDGE_SERVER_ID": "",
@@ -68,4 +68,4 @@ REQUIRED_FIRMWARE_ARTIFACTS = (
     "partition-table.bin",
     "ota_data_initial.bin",
 )
-FIRMWARE_TARGET_SUMMARY = "bridge.touch.wechat"
+FIRMWARE_TARGET_SUMMARY = "bridge.touch.wechat.v1-manual-ip"

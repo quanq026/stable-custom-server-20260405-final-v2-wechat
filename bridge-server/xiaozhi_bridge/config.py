@@ -31,6 +31,8 @@ class BridgeConfig:
     system_prompt: str
     context_tail_messages: int
     session_summary_max_chars: int
+    conversation_idle_timeout_seconds: int
+    conversation_cleanup_interval_seconds: int
     max_reply_chars: int
     max_reply_sentences: int
     drop_audio_while_processing: bool
@@ -75,6 +77,12 @@ class BridgeConfig:
             ),
             context_tail_messages=int(os.getenv("XIAOZHI_BRIDGE_CONTEXT_TAIL_MESSAGES", "6")),
             session_summary_max_chars=int(os.getenv("XIAOZHI_BRIDGE_SESSION_SUMMARY_MAX_CHARS", "600")),
+            conversation_idle_timeout_seconds=int(
+                os.getenv("XIAOZHI_BRIDGE_CONVERSATION_IDLE_TIMEOUT_SECONDS", "3600")
+            ),
+            conversation_cleanup_interval_seconds=int(
+                os.getenv("XIAOZHI_BRIDGE_CONVERSATION_CLEANUP_INTERVAL_SECONDS", "300")
+            ),
             max_reply_chars=int(os.getenv("XIAOZHI_BRIDGE_MAX_REPLY_CHARS", "120")),
             max_reply_sentences=int(os.getenv("XIAOZHI_BRIDGE_MAX_REPLY_SENTENCES", "2")),
             drop_audio_while_processing=_get_bool_env("XIAOZHI_BRIDGE_DROP_AUDIO_WHILE_PROCESSING", True),

@@ -1,9 +1,11 @@
 import asyncio
+import contextlib
 import logging
 import math
 import re
 import struct
 import time
+import unicodedata
 import uuid
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
@@ -20,11 +22,20 @@ from xiaozhi_bridge.tts_engine import TTSEngine
 
 VAD_THRESHOLD = 500
 SILENCE_FRAMES = 10
+BLOCKED_HALLUCINATION_PATTERNS = (
+    "hay dang ky kenh",
+    "ung ho kenh cua minh",
+    "hen gap lai cac ban",
+    "trong nhung video tiep theo",
+    "nho bam like",
+    "bam chuong thong bao",
+)
 
 
 @dataclass
 class ConnectionState:
     session_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    device_id: str = ""
     protocol_version: int = 1
     audio_buffer: bytearray = field(default_factory=bytearray)
     silence_counter: int = 0
@@ -73,6 +84,12 @@ class XiaozhiServer:
         return " ".join(str(text or "").strip().split())
 
     @staticmethod
+    def _fold_text(text):
+        normalized = unicodedata.normalize("NFKD", str(text or ""))
+        ascii_text = normalized.encode("ascii", "ignore").decode("ascii")
+        return " ".join(ascii_text.lower().split())
+
+    @staticmethod
     def _split_sentences(text):
         parts = re.split(r"(?<=[.!?])\s+", text.strip())
         return [part.strip() for part in parts if part.strip()]
@@ -85,6 +102,7 @@ class XiaozhiServer:
         if legacy_state is None:
             legacy_state = ConnectionState(
                 session_id=getattr(self, "session_id", str(uuid.uuid4())),
+                device_id=getattr(self, "device_id", ""),
                 protocol_version=getattr(self, "protocol_version", 1),
                 audio_buffer=getattr(self, "audio_buffer", bytearray()),
                 silence_counter=getattr(self, "silence_counter", 0),
@@ -100,6 +118,7 @@ class XiaozhiServer:
         setattr(self, "silence_counter", state.silence_counter)
         setattr(self, "is_speaking", state.is_speaking)
         setattr(self, "session_id", state.session_id)
+        setattr(self, "device_id", state.device_id)
         setattr(self, "protocol_version", state.protocol_version)
         setattr(self, "last_assistant_text", state.last_assistant_text)
         setattr(self, "last_tts_stop_time", state.last_tts_stop_time)
@@ -167,6 +186,12 @@ class XiaozhiServer:
             return True
         return False
 
+    def _should_ignore_hallucinated_transcript(self, text):
+        transcript = self._fold_text(text)
+        if not transcript:
+            return False
+        return any(pattern in transcript for pattern in BLOCKED_HALLUCINATION_PATTERNS)
+
     async def _send_json_event(self, websocket, payload, summary):
         await websocket.send(payload)
         self.logger.info("Sent JSON event: %s", summary)
@@ -205,7 +230,6 @@ class XiaozhiServer:
     async def handle_connection(self, websocket):
         self.logger.info("New connection from %s", websocket.remote_address)
         state = ConnectionState()
-        self.llm.start_session(state.session_id)
 
         try:
             async for message in websocket:
@@ -233,6 +257,9 @@ class XiaozhiServer:
         if msg_type == "hello":
             version = int(data.get("version", 1) or 1)
             state.protocol_version = version if version in (1, 3) else 1
+            raw_device_id = str(data.get("device_id", "") or "").strip()
+            state.device_id = raw_device_id or state.session_id
+            self.llm.start_session(state.session_id, device_id=state.device_id)
             response = Protocol.create_hello_response(
                 state.session_id,
                 version=state.protocol_version,
@@ -297,6 +324,9 @@ class XiaozhiServer:
             text = self._normalize_transcript(text)
             if self._should_ignore_transcript(text, time.monotonic(), state):
                 return
+            if self._should_ignore_hallucinated_transcript(text):
+                self.logger.info("Ignoring likely hallucinated ASR transcript: %s", text)
+                return
 
             self.logger.info("ASR recognized: %s", text)
             await self._send_json_event(
@@ -340,9 +370,20 @@ async def run_server():
     config = BridgeConfig.from_env()
     logger = configure_logging(config)
     server = XiaozhiServer(config)
+    async def cleanup_loop():
+        while True:
+            await asyncio.sleep(config.conversation_cleanup_interval_seconds)
+            server.llm.cleanup_expired_conversations()
+
     async with websockets.serve(server.handle_connection, config.host, config.port):
+        cleanup_task = asyncio.create_task(cleanup_loop())
         logger.info("Xiaozhi Bridge Server running on ws://%s:%s", config.host, config.port)
-        await asyncio.Future()
+        try:
+            await asyncio.Future()
+        finally:
+            cleanup_task.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await cleanup_task
 
 
 def main():

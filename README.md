@@ -1,11 +1,11 @@
-## Final Stable Snapshot V2
+## Final Stable Snapshot V1 Manual IP
 
 This folder is the packaged baseline of the custom Xiaozhi setup as of `2026-04-05`.
 
 ### Locked Baseline
 
 - Firmware UI: WeChat message style
-- Firmware transport: bridge mode over WebSocket with multi-layer server discovery
+- Firmware transport: bridge mode over WebSocket with manual laptop IP provisioning
 - Firmware extras:
   - touch enabled
   - landscape UI
@@ -14,14 +14,14 @@ This folder is the packaged baseline of the custom Xiaozhi setup as of `2026-04-
   - right-zone brightness gesture
 - Bridge runtime:
   - ASR: `faster-whisper large-v3`
-  - ASR device: `cuda`
-  - ASR compute type: `float16`
+  - ASR device: `cpu`
+  - ASR compute type: `int8`
   - LLM: `LM Studio`
   - TTS: streamed `Edge-TTS`
-- Discovery runtime:
-  - mDNS hostname: `xiaozhi-bridge.local`
-  - UDP discovery port: `24681`
-  - stable server identity persisted in `.env.local`
+- Connection model:
+  - device Wi-Fi portal stores `SSID`, `password`, and `server_ip`
+  - firmware writes `ws://<server_ip>:8000/xiaozhi/v1/` into NVS
+  - no mDNS or UDP discovery in the default runtime path
 
 ### Contents
 
@@ -32,8 +32,7 @@ This folder is the packaged baseline of the custom Xiaozhi setup as of `2026-04-
     - overlap guard
     - streaming TTS path
     - GPU `large-v3` runtime fix
-    - hello response server identity fields
-    - discovery-managed `.env.local`
+    - manual-IP `.env.local`
 - `control-tui`
   - Textual TUI for:
     - start/stop/restart bridge
@@ -41,12 +40,12 @@ This folder is the packaged baseline of the custom Xiaozhi setup as of `2026-04-
     - model and prompt management
     - firmware build
     - firmware flash
-    - discovery responder lifecycle
+    - showing the current laptop LAN IP for the device portal
 - `firmware-src`
   - Source snapshot of the active firmware clone
   - Includes:
     - bridge mode
-    - multi-layer server discovery
+    - manual-IP Wi-Fi portal field
     - WeChat UI
     - landscape orientation
     - touch gesture zones
@@ -55,20 +54,45 @@ This folder is the packaged baseline of the custom Xiaozhi setup as of `2026-04-
 
 ### Restore Procedure
 
-1. Start `LM Studio` and load the chat model you want to use.
-2. Start the operator TUI from:
-   - `C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v2-wechat\control-tui`
-3. Recommended launcher:
+1. Start `LM Studio`.
+2. In `LM Studio`, load the chat model configured in `.env.local`:
+   - default: `qwen3-1.7b`
+3. Start the operator TUI from:
+   - `C:\QuanNewData\xiaozhi\stable-custom-server-20260405-final-v1-wechat\control-tui`
+4. Recommended launcher:
    - `run-xiaozhi-control-tui.ps1`
-4. In the TUI:
+5. In the TUI:
    - start the bridge
-   - confirm LM Studio is reachable
+   - read the `Laptop IP` shown in the status panel
+   - open the device Wi-Fi portal and enter `SSID`, `password`, and that `Laptop IP`
    - flash firmware if needed
+
+### Daily Operator Checklist
+
+1. Open `LM Studio`.
+2. Confirm the target model is loaded and local server is enabled on `http://localhost:1234`.
+3. Open `control-tui` and press `Start Bridge`.
+4. Confirm in `Status`:
+   - `Bridge: UP`
+   - `LM Studio: UP`
+   - `Connection mode: Manual IP (v1)`
+   - `Laptop IP: ...`
+5. On the device portal, enter:
+   - `SSID`
+   - `password`
+   - `Laptop IP`
+6. Test with a short phrase such as `Xin chào`.
+
+### First-Run Notes
+
+- `control-tui` creates its own `.venv` automatically on first run.
+- `Start Bridge` also bootstraps `bridge-server\.venv` automatically if it is missing.
+- The first bridge start can take noticeably longer because Python dependencies are installed on demand.
+- `Edge-TTS` requires Internet access.
+- If `LM Studio` server is running but the chat model is not loaded, the bridge can connect but replies will fail with `HTTP 400 Bad Request`.
 
 ### Notes
 
 - This snapshot is source + artifact focused.
-- Python virtual environments were not copied into this folder.
-- Discovery is on-demand: the board resolves the bridge when starting a turn.
-- The older snapshot remains separate at:
-  - `C:\QuanNewData\xiaozhi\stable-custom-server-20260404-final-largev3-wechat`
+- Python virtual environments may be created automatically on first use.
+- This is a rebuilt `v1` rollback from the `v2` codebase, not a byte-identical restore of the original lost snapshot.

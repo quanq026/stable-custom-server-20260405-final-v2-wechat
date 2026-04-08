@@ -44,6 +44,7 @@ bool BridgeDiscoveryManager::Resolve(BridgeDiscoveryResult& out_result) {
 #endif
 }
 
+#if CONFIG_BRIDGE_DISCOVERY_ENABLE
 bool BridgeDiscoveryManager::ResolveUdpFallback(BridgeDiscoveryResult& out_result) {
     std::vector<BridgeDiscoveryCandidate> candidates;
     if (!QueryUdpCandidates(candidates)) {
@@ -186,3 +187,9 @@ std::string BridgeDiscoveryManager::BuildWebsocketUrl(const std::string& host_or
     }
     return "ws://" + host_or_ip + ":" + std::to_string(CONFIG_BRIDGE_WEBSOCKET_PORT) + path;
 }
+#else
+bool BridgeDiscoveryManager::ResolveUdpFallback(BridgeDiscoveryResult& out_result) {
+    (void)out_result;
+    return false;
+}
+#endif

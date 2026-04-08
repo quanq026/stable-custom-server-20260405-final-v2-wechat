@@ -1,6 +1,7 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
 from xiaozhi_control_tui.controller import ControlController
 from xiaozhi_control_tui.models import CommandResult
@@ -27,6 +28,18 @@ class FakeBridgeManager:
         if on_line:
             on_line("restart")
         return CommandResult(0, ["restart"])
+
+
+class MissingBridgePythonManager(FakeBridgeManager):
+    def resolved_python(self):
+        raise FileNotFoundError("Bridge Python runtime not found")
+
+
+class FailingBridgeManager(FakeBridgeManager):
+    def start(self, on_line=None):
+        if on_line:
+            on_line("bridge-fail")
+        return CommandResult(1, ["bridge-fail"])
 
 
 class FakeDiscoveryManager:
@@ -63,6 +76,11 @@ class FakeFirmwareManager:
         if on_line:
             on_line(f"flash:{port}")
         return CommandResult(0, [f"flash:{port}"])
+
+    def fresh_flash(self, port, on_line=None):
+        if on_line:
+            on_line(f"fresh-flash:{port}")
+        return CommandResult(0, [f"fresh-flash:{port}"])
 
 
 class FailingFirmwareManager(FakeFirmwareManager):
@@ -111,10 +129,7 @@ class ControllerTests(unittest.TestCase):
             status = controller.refresh_status()
         self.assertTrue(status.lm_studio_reachable)
         self.assertEqual(controller.last_status.configured_model, "qwen3-1.7b")
-        self.assertTrue(status.discovery_enabled)
-        self.assertEqual(status.discovery_host, "xiaozhi-bridge")
-        self.assertEqual(status.discovery_port, 24681)
-        self.assertTrue(status.server_id)
+        self.assertEqual(status.connection_mode, "Manual IP (v1)")
 
     def test_save_model_selection_persists(self):
         with TemporaryDirectory() as tmp:
@@ -139,6 +154,12 @@ class ControllerTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 controller.flash_firmware("")
 
+    def test_fresh_flash_requires_explicit_com_confirmation(self):
+        with TemporaryDirectory() as tmp:
+            controller = self.make_controller(tmp)
+            with self.assertRaises(ValueError):
+                controller.fresh_flash_firmware("")
+
     def test_action_failures_surface_in_logs_and_status(self):
         with TemporaryDirectory() as tmp:
             controller = self.make_controller(tmp, firmware_manager=FailingFirmwareManager())
@@ -147,16 +168,35 @@ class ControllerTests(unittest.TestCase):
         self.assertIn("Build Firmware failed", controller.banner)
         self.assertTrue(any("Build Firmware failed" in line for line in controller.log_messages))
 
-    def test_status_lines_include_discovery_details(self):
+    @patch("xiaozhi_control_tui.controller.detect_lan_ip_candidates")
+    def test_status_lines_include_manual_ip_guidance(self, detect_lan_ip_candidates_mock):
+        detect_lan_ip_candidates_mock.return_value = ["192.168.1.15", "10.0.0.12"]
         with TemporaryDirectory() as tmp:
             controller = self.make_controller(tmp)
             controller.refresh_status()
             lines = controller.status_lines()
-        self.assertTrue(any("Discovery: UP" in line or "Discovery: DOWN" in line for line in lines))
-        self.assertTrue(any("Discovery host: xiaozhi-bridge.local" in line for line in lines))
+        self.assertTrue(any("Connection mode: Manual IP (v1)" in line for line in lines))
+        self.assertTrue(any("Laptop IP: 192.168.1.15" in line for line in lines))
 
-    def test_start_bridge_starts_discovery_service_too(self):
+    def test_start_bridge_does_not_start_discovery_service(self):
         with TemporaryDirectory() as tmp:
             controller = self.make_controller(tmp)
             controller.start_bridge()
-        self.assertEqual(controller._test_discovery_manager.calls, ["start"])
+        self.assertEqual(controller._test_discovery_manager.calls, [])
+
+    def test_start_bridge_returns_bridge_failure_without_discovery_actions(self):
+        with TemporaryDirectory() as tmp:
+            controller = self.make_controller(tmp)
+            controller.bridge_manager = FailingBridgeManager()
+            result = controller.start_bridge()
+        self.assertEqual(result.exit_code, 1)
+        self.assertEqual(controller._test_discovery_manager.calls, [])
+
+    def test_refresh_status_does_not_crash_when_bridge_python_is_missing(self):
+        with TemporaryDirectory() as tmp:
+            controller = self.make_controller(tmp)
+            controller.bridge_manager = MissingBridgePythonManager()
+            status = controller.refresh_status()
+            lines = controller.status_lines()
+        self.assertEqual(status.bridge_python_path, "MISSING")
+        self.assertTrue(any("create bridge-server\\.venv before starting bridge" in line for line in lines))

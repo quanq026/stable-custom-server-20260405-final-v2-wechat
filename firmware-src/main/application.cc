@@ -36,6 +36,23 @@ static const char* const STATE_STRINGS[] = {
     "invalid_state"
 };
 
+#if CONFIG_BRIDGE_MODE_ENABLE && !CONFIG_BRIDGE_DISCOVERY_ENABLE
+static void ClearLegacyBridgeDiscoveryCache() {
+    Settings legacy_settings("bridge_discovery", true);
+    bool has_legacy_cache = !legacy_settings.GetString("server_id").empty()
+        || !legacy_settings.GetString("server_name").empty()
+        || !legacy_settings.GetString("ws_url").empty();
+    if (!has_legacy_cache) {
+        return;
+    }
+
+    ESP_LOGI(TAG, "Clearing legacy bridge discovery cache for manual-IP v1 mode");
+    legacy_settings.EraseKey("server_id");
+    legacy_settings.EraseKey("server_name");
+    legacy_settings.EraseKey("ws_url");
+}
+#endif
+
 Application::Application() {
     event_group_ = xEventGroupCreate();
 
@@ -352,6 +369,10 @@ void Application::StopListening() {
 void Application::Start() {
     auto& board = Board::GetInstance();
     SetDeviceState(kDeviceStateStarting);
+
+#if CONFIG_BRIDGE_MODE_ENABLE && !CONFIG_BRIDGE_DISCOVERY_ENABLE
+    ClearLegacyBridgeDiscoveryCache();
+#endif
 
     /* Setup the display */
     auto display = board.GetDisplay();
@@ -755,6 +776,7 @@ void Application::SetDeviceState(DeviceState state) {
             // Make sure the audio processor is running
             if (!audio_service_.IsAudioProcessorRunning()) {
                 // Send the start listening command
+                ESP_LOGI(TAG, "Sending listen start mode=%d", static_cast<int>(listening_mode_));
                 protocol_->SendStartListening(listening_mode_);
                 audio_service_.EnableVoiceProcessing(true);
                 audio_service_.EnableWakeWordDetection(false);

@@ -68,6 +68,7 @@ class DiscoveryManagerTests(unittest.TestCase):
         command = manager.stop_command()
 
         self.assertIn("24681", " ".join(command))
+        self.assertIn('$_.ProcessId -ne $PID', " ".join(command))
 
     def test_server_id_is_ensured_before_start(self):
         with TemporaryDirectory() as tmp:
@@ -82,3 +83,17 @@ class DiscoveryManagerTests(unittest.TestCase):
 
         self.assertEqual(before, after)
         self.assertIn("XIAOZHI_BRIDGE_SERVER_ID=", after)
+
+    @patch.object(DiscoveryManager, "stop", return_value=None)
+    @patch("xiaozhi_control_tui.discovery.time.sleep", return_value=None)
+    @patch("xiaozhi_control_tui.discovery.get_discovery_processes")
+    @patch("xiaozhi_control_tui.discovery.subprocess.Popen")
+    def test_start_stops_existing_discovery_instances_first(self, popen_mock, get_processes_mock, _sleep_mock, stop_mock):
+        popen_mock.return_value.poll.return_value = None
+        get_processes_mock.side_effect = [[], [{"pid": 9999}]]
+        manager = self.make_manager()
+
+        result = manager.start()
+
+        stop_mock.assert_called_once()
+        self.assertEqual(result.exit_code, 0)
